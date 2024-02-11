@@ -18,11 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {//cuando todo esté ca
     
     // Asegúrate de que el formulario existe antes de intentar agregar un controlador de eventos
     if (formulario) {
-        // Agrega un controlador de eventos para el evento submit del formulario
+        // controlador de eventos para el submit del formulario
         formulario.addEventListener('submit', function(event) {
-            // Previene la acción predeterminada del formulario
-            event.preventDefault();
-
             // Previene la acción predeterminada del formulario
             event.preventDefault();
 
