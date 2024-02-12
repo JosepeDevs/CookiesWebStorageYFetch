@@ -1,10 +1,12 @@
-var indiceCocheAMostrar
+var indiceCocheAMostrar = -1;
 
 // Intenta obtener el array de coches de localStorage y lo parsea a formato JSON; si no existe, usa un array vacío
-let cochesArray = localStorage.getItem('coches') ? JSON.parse(localStorage.getItem('coches')) : [];
+let cochesArray = localStorage.getItem('arrayCoches') ? JSON.parse(localStorage.getItem('arrayCoches')) : [];
 
 document.addEventListener('DOMContentLoaded', function() {//cuando todo esté cargadito, se haya tomado su café mañanero y esté dispuesto a escuchar...
     var formulario = document.getElementById('formulario');
+if(formulario){
+    //ya podemos añadir listeners 
 
     var deleteCarButton = document.getElementById('deleteCar');
     var nextCarButton = document.getElementById('nextCar');
@@ -25,20 +27,23 @@ document.addEventListener('DOMContentLoaded', function() {//cuando todo esté ca
      * @param {number} indiceCocheAMostrar Debe ser un número
      */
     function printTablaConCoche(cochesArray,indiceCocheAMostrar ){
-        cocheActualH2.innerHTML = cochesArray[indiceCocheAMostrar].matricula
-        datosCocheActual.innerHTML +="<table>";
-        datosCocheActualDiv.innerHTML +=`<tr>`
-        datosCocheActualDiv.innerHTML +=`<td>`
-        datosCocheActualDiv.innerHTML += cochesArray[indiceCocheAMostrar].matricula
-            datosCocheActualDiv.innerHTML +=`</td>`
-        datosCocheActualDiv.innerHTML +=`<td>`
-        datosCocheActualDiv.innerHTML += cochesArray[indiceCocheAMostrar].color
-            datosCocheActualDiv.innerHTML +=`</td>`
-        datosCocheActualDiv.innerHTML +=`<td>`
-        datosCocheActualDiv.innerHTML += cochesArray[indiceCocheAMostrar].marca
-            datosCocheActualDiv.innerHTML +=`</td>`
-        datosCocheActualDiv.innerHTML +=`</tr>`
-        datosCocheActual.innerHTML +="</table>";
+        if (cochesArray.length >  0 && indiceCocheAMostrar >=  0 && indiceCocheAMostrar < cochesArray.length) {
+            var coche = cochesArray[indiceCocheAMostrar];
+            cocheActualH2.innerHTML = coche.matricula;
+            datosCocheActualDiv.innerHTML =""
+            datosCocheActualDiv.innerHTML += "<table><tr>" +
+                "<td>" + coche.matricula + "</td>" +
+                "<td>" + coche.color + "</td>" +
+                "<td>" + coche.marca + "</td>" +
+                "</tr></table>";
+        } else if(cochesArray.length === 0) {
+            cocheActualH2.innerHTML = "No hay coches para mostrar";
+            datosCocheActualDiv.innerHTML = "Por favor, agregue más coches";
+        } else{
+            //mensajes diferentes para saber qué el comportamiento ha cambiado
+            cocheActualH2.innerHTML = "Sin coches"+indiceCocheAMostrar;
+            datosCocheActualDiv.innerHTML = "Sin coches";
+        }
     }
     
     deleteCarButton.addEventListener('click', function(event) {
@@ -54,19 +59,22 @@ document.addEventListener('DOMContentLoaded', function() {//cuando todo esté ca
             //se actualizaria (como la key es la misma sobreescribiría los datos, realmente borrarlo es un poco overkikll, pero de nuevo, hay que probar todos los métodos)
             localStorage.removeItem("arrayCoches");
             localStorage.setItem("arrayCoches", JSON.stringify(cochesArray));
+            next();
         }
     })
-
-    nextCarButton.addEventListener('click', function(event) {
+    function next(){//valor predeterminado si no le decimos nada
         if(indiceCocheAMostrar == cochesArray.length-1){
-            indiceCocheAMostrar = -1 //si entra aquí es que al sumar 1 al índice nos iríamos fuera de los límites del array, lo reiniciamos.
+            indiceCocheAMostrar = 0 //si entra aquí es que al sumar 1 al índice nos iríamos fuera de los límites del array, lo reiniciamos.
         } else if(indiceCocheAMostrar === null){
             indiceCocheAMostrar = 0 //si no existe, empezamos por el principio, como toda buena casa
-        } else {
+        } else  if(indiceCocheAMostrar > cochesArray.length-1){
+            indiceCocheAMostrar = 0 // si no está al final y ya existe, cada vez que llamemos esta función aumentaremos en 1 el indice del array a mostrar
+        } else{
             indiceCocheAMostrar += 1 // si no está al final y ya existe, cada vez que llamemos esta función aumentaremos en 1 el indice del array a mostrar
         }
         printTablaConCoche(cochesArray, indiceCocheAMostrar );
-    })
+    }
+    nextCarButton.addEventListener('click', next) 
 
     prevCarButton.addEventListener('click', function(event) {
         if(indiceCocheAMostrar == 0){
@@ -79,41 +87,45 @@ document.addEventListener('DOMContentLoaded', function() {//cuando todo esté ca
         printTablaConCoche(cochesArray, indiceCocheAMostrar );
     })
 
-    guardarCoche.addEventListener('click', function submit(event) {
+    formulario.addEventListener('submit', function (event) {
         event.preventDefault(); //evita que se recargue la pagina , no mandar formulario
         // Obtenemos lo que hay en los inputs
         var matriculaInput = document.getElementById('matricula');
         var colorInput = document.getElementById('color');
         var marcaInput = document.getElementById('marca');
 
-        let matricula =  matriculaInput.innerHTML;
-        let color =  colorInput.innerHTML;
-        let marca =  marcaInput.innerHTML;
+        let matricula =  matriculaInput.value;
+        let color =  colorInput.value;
+        let marca =  marcaInput.value;
         var miCoche = new Coche(matricula, color, marca)
         
         cochesArray.push(miCoche);
         localStorage.setItem("arrayCoches", JSON.stringify(cochesArray));
 
-        matriculaInput.innerHTML = ""
-        colorInput.innerHTML = ""
-        marcaInput.innerHTML = ""
-        
-        listarDiv.innerHTML +=`<table>`
-        cochesArray.forEach(addCocheATabla);//para cada objeto vamos a hacer un callback
-        listarDiv.innerHTML +=`</table>`
-        function addCocheATabla(coche){
+        matriculaInput.value = ""
+        colorInput.value = ""
+        marcaInput.value = ""
+ 
 
-            listarDiv.innerHTML +=`<tr>`
-                listarDiv.innerHTML +=`<td>`
-                    listarDiv.innerHTML += coche.matricula
-                listarDiv.innerHTML +=`</td>`
-                listarDiv.innerHTML +=`<td>`
-                    listarDiv.innerHTML += coche.color
-                listarDiv.innerHTML +=`</td>`
-                listarDiv.innerHTML +=`<td>`
-                    listarDiv.innerHTML += coche.marca
-                listarDiv.innerHTML +=`</td>`
-            listarDiv.innerHTML +=`<tr>`
+
+
+        listarDiv.innerHTML = `<table>`;
+        listarDiv.innerHTML += `<tr><th>Matricula</th><th>Color</th><th>Marca</th></tr>`;
+        cochesArray.forEach(addCocheATabla); // Para cada objeto vamos a hacer un callback
+        listarDiv.innerHTML += `</table>`;
+
+        function addCocheATabla(coche) {
+           /* listarDiv.innerHTML += `<tr>`;
+            listarDiv.innerHTML += `<td>${coche.matricula}</td>`;
+            listarDiv.innerHTML += `<td>${coche.color}</td>`;
+            listarDiv.innerHTML += `<td>${coche.marca}</td>`;
+            listarDiv.innerHTML += `</tr>`; 
+*/
+            listarDiv.innerHTML += "<table><tr>" +
+            "<td>" + coche.matricula + "</td>" +
+            "<td>" + coche.color + "</td>" +
+            "<td>" + coche.marca + "</td>" +
+            "</tr></table>";
         }
     })
-})
+}})
