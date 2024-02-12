@@ -33,6 +33,12 @@
             border-bottom-style: solid;
             border-left-style: solid;
         }
+
+        table,th,td{
+            border:solid 1px;
+            border-collapse: collapse;
+        }
+        
     </style>
 </head>
 <body>
@@ -49,13 +55,17 @@
             <label for="marca">Marca:</label>
             <input type="text" id="marca" name="marca" required><br>
 
-            <button type="submit" id="saveCar">↓ Guardar ↓</button>
+            <button type="submit" id="guardarCoche">↓ Guardar ↓</button>
             <button type="button" id="deleteCar">Eliminar Coche</button>
             <button type="button" id="nextCar">Ver Coche Siguiente</button>
             <button type="button" id="prevCar">Ver Coche Anterior</button>
             <button type="reset" id="limpiar">Limpiar Formulario</button>
         </form>
     </fieldset>    
-    <div><h2 id="cocheActual"></h2><div id="datosCocheActual"></div><div id="listar"></div></div>
+    <div>
+        <h2 id="cocheActual"></h2>
+        <div id="datosCocheActual"></div>
+        <div id="listar"></div>
+    </div>
 </body>
 </html>
