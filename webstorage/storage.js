@@ -9,12 +9,15 @@ if(formulario){
     //ya podemos añadir listeners 
 
     var deleteCarButton = document.getElementById('deleteCar');
+
     var nextCarButton = document.getElementById('nextCar');
     var prevCarButton = document.getElementById('prevCar');
-    var guardarCoche = document.getElementById('guardarCoche');
     var listarDiv = document.getElementById('listar');
     var cocheActualH2 = document.getElementById('cocheActual');
     var datosCocheActualDiv = document.getElementById('datosCocheActual');
+    var matriculaInput = document.getElementById('matricula');
+    var colorInput = document.getElementById('color');
+    var marcaInput = document.getElementById('marca');
     
     function Coche(matricula, color, marca) {
         this.matricula = matricula;
@@ -45,6 +48,23 @@ if(formulario){
             datosCocheActualDiv.innerHTML = "Sin coches";
         }
     }
+
+    function printEnFormulario(cochesArray,indiceCocheAMostrar ){
+        if (cochesArray.length >  0 && indiceCocheAMostrar >=  0 && indiceCocheAMostrar < cochesArray.length) {
+            var coche = cochesArray[indiceCocheAMostrar];
+            cocheActualH2.innerHTML = coche.matricula;
+            matriculaInput.value =  coche.matricula;
+            colorInput.value =  coche.color;
+            marcaInput.value =  coche.marca;
+        } else if(cochesArray.length === 0) {
+            cocheActualH2.innerHTML = "No hay coches para mostrar";
+            datosCocheActualDiv.innerHTML = "Por favor, agregue más coches";
+        } else{
+            //mensajes diferentes para saber qué el comportamiento ha cambiado
+            cocheActualH2.innerHTML = "Sin coches"+indiceCocheAMostrar;
+            datosCocheActualDiv.innerHTML = "Sin coches";
+        }
+    }
     
     deleteCarButton.addEventListener('click', function(event) {
         const matriculaABorrar = cocheActualH2.innerHTML
@@ -60,8 +80,12 @@ if(formulario){
             localStorage.removeItem("arrayCoches");
             localStorage.setItem("arrayCoches", JSON.stringify(cochesArray));
             next();
+            printTablaConCoche(cochesArray, indiceCocheAMostrar );
+            printEnFormulario(cochesArray, indiceCocheAMostrar )
+            listarCoches(cochesArray)
         }
     })
+
     function next(){//valor predeterminado si no le decimos nada
         if(indiceCocheAMostrar == cochesArray.length-1){
             indiceCocheAMostrar = 0 //si entra aquí es que al sumar 1 al índice nos iríamos fuera de los límites del array, lo reiniciamos.
@@ -72,10 +96,13 @@ if(formulario){
         } else{
             indiceCocheAMostrar += 1 // si no está al final y ya existe, cada vez que llamemos esta función aumentaremos en 1 el indice del array a mostrar
         }
-        printTablaConCoche(cochesArray, indiceCocheAMostrar );
     }
-    nextCarButton.addEventListener('click', next) 
 
+    nextCarButton.addEventListener('click', function(event) { 
+        next()
+        printTablaConCoche(cochesArray, indiceCocheAMostrar );
+        printEnFormulario(cochesArray, indiceCocheAMostrar )
+    })
     prevCarButton.addEventListener('click', function(event) {
         if(indiceCocheAMostrar == 0){
             indiceCocheAMostrar = cochesArray.length-1 //si entra aquí es que al restar 1 al índice nos iríamos fuera de los límites del array, que dé la vuelta.
@@ -85,15 +112,25 @@ if(formulario){
             indiceCocheAMostrar += -1 // si no está al principio y ya existe, cada vez que llamemos esta función reducirems en 1 el indice del array a mostrar
         }
         printTablaConCoche(cochesArray, indiceCocheAMostrar );
-    })
+        printEnFormulario(cochesArray, indiceCocheAMostrar )
 
-    formulario.addEventListener('submit', function (event) {
+    })
+    function listarCoches(cochesArray) {
+        var tableContent = "<table><tr><th>Matricula</th><th>Color</th><th>Marca</th></tr>";
+        cochesArray.forEach(function(coche) {
+            tableContent += "<tr>" +
+                "<td>" + coche.matricula + "</td>" +
+                "<td>" + coche.color + "</td>" +
+                "<td>" + coche.marca + "</td>" +
+                "</tr>";
+        });
+        tableContent += "</table>";
+        listarDiv.innerHTML = tableContent;
+    }
+
+    formulario.addEventListener('submit', function enviar(event) {
         event.preventDefault(); //evita que se recargue la pagina , no mandar formulario
         // Obtenemos lo que hay en los inputs
-        var matriculaInput = document.getElementById('matricula');
-        var colorInput = document.getElementById('color');
-        var marcaInput = document.getElementById('marca');
-
         let matricula =  matriculaInput.value;
         let color =  colorInput.value;
         let marca =  marcaInput.value;
@@ -106,20 +143,9 @@ if(formulario){
         colorInput.value = ""
         marcaInput.value = ""
  
-
-
-
         listarDiv.innerHTML = `<table>`;
-        listarDiv.innerHTML += `<tr><th>Matricula</th><th>Color</th><th>Marca</th></tr>`;
-        cochesArray.forEach(addCocheATabla); // Para cada objeto vamos a hacer un callback
         listarDiv.innerHTML += `</table>`;
+        listarCoches(cochesArray)
 
-        function addCocheATabla(coche) {
-            listarDiv.innerHTML += "<table><tr>" +
-            "<td>" + coche.matricula + "</td>" +
-            "<td>" + coche.color + "</td>" +
-            "<td>" + coche.marca + "</td>" +
-            "</tr></table>";
-        }
     })
 }})
