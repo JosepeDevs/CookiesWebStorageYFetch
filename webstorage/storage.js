@@ -115,12 +115,6 @@ if(formulario){
         listarDiv.innerHTML += `</table>`;
 
         function addCocheATabla(coche) {
-           /* listarDiv.innerHTML += `<tr>`;
-            listarDiv.innerHTML += `<td>${coche.matricula}</td>`;
-            listarDiv.innerHTML += `<td>${coche.color}</td>`;
-            listarDiv.innerHTML += `<td>${coche.marca}</td>`;
-            listarDiv.innerHTML += `</tr>`; 
-*/
             listarDiv.innerHTML += "<table><tr>" +
             "<td>" + coche.matricula + "</td>" +
             "<td>" + coche.color + "</td>" +
