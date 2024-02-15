@@ -1,0 +1,27 @@
+name: NombreDelProceso.EnEsteCasoAutoDeployFTPInfinityFree
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  web-deploy:
+      name: 🎉 Deploy puedes poner aquí el nombre que quieras
+      runs-on: ubuntu-latest
+      steps:
+      - name: 🚚 Get latest code aquí también puedes poner el nombre que más te inspire (algo para saber dónde falla el código)
+        uses: actions/checkout@v4.1.1
+  
+      - name: 📂 Sync files o el nombre que te apetezca ponerle
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.servidor }}
+          username: ${{ secrets.usuario }}
+          password: ${{ secrets.psswrd }}
+          server-dir: /htdocs/
+          protocol: ftps
+          port: 21 
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
